@@ -23,7 +23,7 @@
 #ifndef LMS1XX_LMS_BUFFER_H_
 #define LMS1XX_LMS_BUFFER_H_
 
-#include "console_bridge/console.h"
+#include <LMS1xx/asvmq.h>
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>

@@ -25,6 +25,11 @@
 #define LMS1XX_LMS_STRUCTS_H_
 
 #include <stdint.h>
+#include <vector>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+
+namespace py = pybind11;
 
 /*!
 * @class scanCfg
@@ -166,6 +171,16 @@ struct scanData
    */
   uint16_t dist1[1082];
 
+  py::array_t<uint16_t> getDist1() {
+    return py::array_t<uint16_t>(dist1);
+  }
+
+  void setDist1(py::array_t<uint16_t> dist1_) {
+    for(int i=0;i<1082;i++) {
+      dist1[i] = *dist1_.data(i);
+    }
+  }
+
   /*!
    * @brief Number of samples in dist2.
    *
@@ -177,6 +192,16 @@ struct scanData
    *
    */
   uint16_t dist2[1082];
+
+  py::array_t<uint16_t> getDist2() {
+    return py::array_t<uint16_t>(dist2);
+  }
+
+  void setDist2(py::array_t<uint16_t> dist2_) {
+    for(int i=0;i<1082;i++) {
+      dist2[i] = *dist2_.data(i);
+    }
+  }
 
   /*!
    * @brief Number of samples in rssi1.
@@ -190,6 +215,16 @@ struct scanData
    */
   uint16_t rssi1[1082];
 
+  py::array_t<uint16_t> getRssi1() {
+    return py::array_t<uint16_t>(rssi1);
+  }
+
+  void setRssi1(py::array_t<uint16_t> rssi1_) {
+    for(int i=0;i<1082;i++) {
+      rssi1[i] = *rssi1_.data(i);
+    }
+  }
+
   /*!
    * @brief Number of samples in rssi2.
    *
@@ -201,6 +236,16 @@ struct scanData
    *
    */
   uint16_t rssi2[1082];
+
+  py::array_t<uint16_t> getRssi2() {
+    return py::array_t<uint16_t>(rssi2);
+  }
+
+  void setRssi2(py::array_t<uint16_t> rssi2_) {
+    for(int i=0;i<1082;i++) {
+      rssi2[i] = *rssi2_.data(i);
+    }
+  }
 };
 
 #endif  // LMS1XX_LMS_STRUCTS_H_

@@ -34,8 +34,11 @@
 #include <unistd.h>
 
 #include "LMS1xx/LMS1xx.h"
-#include "console_bridge/console.h"
+#include "LMS1xx/asvmq.h"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
+namespace py = pybind11;
 LMS1xx::LMS1xx() : connected_(false)
 {
 }
@@ -233,7 +236,7 @@ void LMS1xx::scanContinous(int start)
   int len = read(socket_fd_, buf, 100);
 
   if (buf[0] != 0x02)
-    logError("invalid packet recieved");
+    logFatal("invalid packet recieved");
 
   buf[len] = 0;
   logDebug("RX: %s", buf);
@@ -495,4 +498,73 @@ void LMS1xx::startDevice()
     logWarn("invalid packet recieved");
   buf[len] = 0;
   logDebug("RX: %s", buf);
+}
+
+PYBIND11_MODULE(lms1xx, m) {
+  m.doc() = "LMS1xx wrappers"; // optional module docstring
+
+  py::enum_<status_t>(m, "status_t")
+  .value("undefined", undefined)
+  .value("initialisation", initialisation)
+  .value("configuration", configuration)
+  .value("configuration", configuration)
+  .value("idle", idle)
+  .value("rotated", rotated)
+  .value("in_preparation", in_preparation)
+  .value("ready", ready)
+  .value("ready_for_measurement", ready_for_measurement)
+  .export_values();
+
+  py::class_<scanCfg>(m, "scanCfg")
+  .def(py::init<>())
+  .def_readwrite("scaningFrequency", &scanCfg::scaningFrequency)
+  .def_readwrite("angleResolution", &scanCfg::angleResolution)
+  .def_readwrite("startAngle",&scanCfg::startAngle)
+  .def_readwrite("stopAngle",&scanCfg::stopAngle);
+
+  py::class_<scanDataCfg>(m, "scanDataCfg")
+  .def(py::init<>())
+  .def_readwrite("outputChannel", &scanDataCfg::outputChannel)
+  .def_readwrite("remission", &scanDataCfg::remission)
+  .def_readwrite("resolution", &scanDataCfg::resolution)
+  .def_readwrite("encoder", &scanDataCfg::encoder)
+  .def_readwrite("position", &scanDataCfg::position)
+  .def_readwrite("deviceName", &scanDataCfg::deviceName)
+  .def_readwrite("timestamp", &scanDataCfg::timestamp)
+  .def_readwrite("outputInterval", &scanDataCfg::outputInterval);
+
+  py::class_<scanOutputRange>(m, "scanOutputRange")
+  .def(py::init<>())
+  .def_readwrite("angleResolution", &scanOutputRange::angleResolution)
+  .def_readwrite("startAngle", &scanOutputRange::startAngle)
+  .def_readwrite("stopAngle", &scanOutputRange::stopAngle);
+
+  py::class_<scanData>(m, "scanData")
+  .def(py::init<>())
+  .def_readwrite("dist_len1", &scanData::dist_len1)
+  .def_property("dist1", &scanData::getDist1, &scanData::setDist1)
+  .def_readwrite("dist_len2", &scanData::dist_len2)
+  .def_property("dist2", &scanData::getDist2, &scanData::setDist2)
+  .def_readwrite("rssi_len1", &scanData::rssi_len1)
+  .def_property("rssi1", &scanData::getRssi1, &scanData::setRssi1)
+  .def_readwrite("rssi_len2", &scanData::rssi_len2)
+  .def_property("rssi2", &scanData::getRssi2, &scanData::setRssi2);
+
+  py::class_<LMS1xx>(m, "LMS1xx")
+  .def(py::init<>())
+  .def("connect", &LMS1xx::connect, "Initializes connection to Lidar", py::arg("host"), py::arg("port"))
+  .def("disconnect", &LMS1xx::disconnect, "Disconnects from Lidar")
+  .def("isConnected", &LMS1xx::isConnected, "Returns truth value whether lidar is connected or not")
+  .def("startMeas", &LMS1xx::startMeas, "Sets lidar mode to start measuring")
+  .def("stopMeas", &LMS1xx::stopMeas, "Sets lidar mode to stop measuring")
+  .def("queryStatus", &LMS1xx::queryStatus, "Returns the query status")
+  .def("login", &LMS1xx::login, "Logs in to the Lidar to access settings and configuration")
+  .def("getScanCfg", &LMS1xx::getScanCfg, "Gets the scan config from Lidar")
+  .def("setScanCfg", &LMS1xx::setScanCfg, "Sets the scan config to Lidar storage", py::arg("cfg"))
+  .def("setScanDataCfg", &LMS1xx::setScanDataCfg, "Sets the scan data config to Lidar storage", py::arg("cfg"))
+  .def("getScanOutputRange", &LMS1xx::getScanOutputRange, "Gets the scan output range")
+  .def("scanContinous", &LMS1xx::scanContinous, "Sets the boolean whether to scan continuously or not", py::arg("start"))
+  .def("getScanData", &LMS1xx::getScanData, "Gets the scandata in the form of lms1xx.scanData object")
+  .def("saveConfig", &LMS1xx::saveConfig, "Sends message to Lidar to save current configuration to its storage")
+  .def("startDevice", &LMS1xx::startDevice, "Sends message to Lidar to start the device");
 }
