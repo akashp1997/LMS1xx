@@ -27,6 +27,7 @@
 #include <stdint.h>
 #include <vector>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
 namespace py = pybind11;
@@ -171,13 +172,14 @@ struct scanData
    */
   uint16_t dist1[1082];
 
-  py::array_t<uint16_t> getDist1() {
-    return py::array_t<uint16_t>(dist1);
+  py::list getDist1() {
+    std::vector <uint16_t> dist1_(dist1, dist1+1082);
+    return py::cast(dist1_);
   }
 
-  void setDist1(py::array_t<uint16_t> dist1_) {
-    for(int i=0;i<1082;i++) {
-      dist1[i] = *dist1_.data(i);
+  void setDist1(py::list dist1_) {
+    for(auto i=0;i<dist1_.size();i++) {
+      dist1[i] = dist1_[i].cast<uint16_t>();
     }
   }
 
@@ -193,13 +195,14 @@ struct scanData
    */
   uint16_t dist2[1082];
 
-  py::array_t<uint16_t> getDist2() {
-    return py::array_t<uint16_t>(dist2);
+  py::list getDist2() {
+    std::vector <uint16_t> dist2_(dist2, dist2+1082);
+    return py::cast(dist2_);
   }
 
-  void setDist2(py::array_t<uint16_t> dist2_) {
-    for(int i=0;i<1082;i++) {
-      dist2[i] = *dist2_.data(i);
+  void setDist2(py::list dist2_) {
+    for(auto i=0;i<dist2_.size();i++) {
+      dist2[i] = dist2_[i].cast<uint16_t>();
     }
   }
 
@@ -215,13 +218,14 @@ struct scanData
    */
   uint16_t rssi1[1082];
 
-  py::array_t<uint16_t> getRssi1() {
-    return py::array_t<uint16_t>(rssi1);
+  py::list getRssi1() {
+    std::vector <uint16_t> rssi1_(rssi1, rssi1+1082);
+    return py::cast(rssi1_);
   }
 
-  void setRssi1(py::array_t<uint16_t> rssi1_) {
-    for(int i=0;i<1082;i++) {
-      rssi1[i] = *rssi1_.data(i);
+  void setRssi1(py::list rssi1_) {
+    for(auto i=0;i<rssi1_.size();i++) {
+      rssi1[i] = rssi1_[i].cast<uint16_t>();
     }
   }
 
@@ -237,13 +241,14 @@ struct scanData
    */
   uint16_t rssi2[1082];
 
-  py::array_t<uint16_t> getRssi2() {
-    return py::array_t<uint16_t>(rssi2);
+  py::list getRssi2() {
+    std::vector <uint16_t> rssi2_(rssi2, rssi2+1082);
+    return py::cast(rssi2_);
   }
 
-  void setRssi2(py::array_t<uint16_t> rssi2_) {
-    for(int i=0;i<1082;i++) {
-      rssi2[i] = *rssi2_.data(i);
+  void setRssi2(py::list rssi2_) {
+    for(auto i=0;i<rssi2_.size();i++) {
+      rssi2[i] = rssi2_[i].cast<uint16_t>();
     }
   }
 };

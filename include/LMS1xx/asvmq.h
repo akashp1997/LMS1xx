@@ -8,19 +8,43 @@
 namespace py = pybind11;
 
 void logDebug(const char *format, ...) {
-  //py::print("[DEBUG]"+display_string);
+  va_list vl;
+  va_start(vl, format);
+  char buff[1000];
+  if(vsprintf(buff, format, vl)>0) {
+    //py::print("[DEBUG]", buff);
+  }
+  va_end(vl);
 }
 
 void logWarn(const char *format, ...) {
-    //py::print("[WARN]"+display_string);
+  va_list vl;
+  va_start(vl, format);
+  char buff[1000];
+  if(vsprintf(buff, format, vl)>0) {
+    py::print("[WARN]", buff);
+  }
+  va_end(vl);
 }
 
 void logInfo(const char *format, ...) {
-    //py::print("[INFO]"+display_string);
+  va_list vl;
+  va_start(vl, format);
+  char buff[1000];
+  if(vsprintf(buff, format, vl)>0) {
+    py::print("[INFO]", buff);
+  }
+  va_end(vl);
 }
 
 void logFatal(const char *format, ...) {
-    //py::print("[FATAL]"+display_string);
+  va_list vl;
+  va_start(vl, format);
+  char buff[1000];
+  if(vsprintf(buff, format, vl)>0) {
+    py::print("[FATAL]", buff);
+  }
+  va_end(vl);
 }
 
 

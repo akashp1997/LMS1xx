@@ -36,7 +36,6 @@
 #include "LMS1xx/LMS1xx.h"
 #include "LMS1xx/asvmq.h"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 namespace py = pybind11;
 LMS1xx::LMS1xx() : connected_(false)
@@ -347,6 +346,9 @@ void LMS1xx::parseScanData(char* buffer, scanData* data)
     tok = strtok(NULL, " "); //NumberData
     int NumberData;
     sscanf(tok, "%X", &NumberData);
+    if(NumberData!=541) {
+      return;
+    }
     logDebug("NumberData : %d", NumberData);
 
     if (type == 0)
@@ -395,6 +397,9 @@ void LMS1xx::parseScanData(char* buffer, scanData* data)
   tok = strtok(NULL, " "); //NumberChannels8Bit
   int NumberChannels8Bit;
   sscanf(tok, "%d", &NumberChannels8Bit);
+  if(NumberChannels8Bit!=0) {
+    return;
+  }
   logDebug("NumberChannels8Bit : %d\n", NumberChannels8Bit);
 
   for (int i = 0; i < NumberChannels8Bit; i++)
